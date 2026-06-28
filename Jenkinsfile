@@ -51,7 +51,7 @@ pipeline {
           --severity HIGH,CRITICAL \
           --exit-code 0 \
           foodhub-auth-service:${BUILD_NUMBER}
-        '''
+        ''' 
     }
 }
     }
@@ -66,3 +66,5 @@ pipeline {
         }
     }
 }
+
+
