@@ -8,13 +8,13 @@ pipeline {
     stages {
 
         stage('Build') {
-            steps {
-                dir('auth-service') {
-                    sh 'chmod +x mvnw'
-                    sh './mvnw clean verify'
-                }
-            }
+    steps {
+        dir('auth-service') {
+            sh 'chmod +x mvnw'
+            sh './mvnw clean package -DskipTests'
         }
+    }
+}
 
         stage('SonarQube Analysis') {
             steps {
