@@ -13,20 +13,17 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-            steps {
-                dir('auth-service') {
-                    withSonarQubeEnv('sonarqube') {
-                        sh """
-                        ${scannerHome}/bin/sonar-scanner \
-                        -Dsonar.projectKey=foodhub-auth-service \
-                        -Dsonar.projectName=foodhub-auth-service \
-                        -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target/classes
-                        """
-                    }
-                }
+    steps {
+        dir('auth-service') {
+            withSonarQubeEnv('sonarqube') {
+                sh '''
+                ./mvnw sonar:sonar \
+                  -Dsonar.projectKey=foodhub-auth-service
+                '''
             }
         }
+    }
+}
     }
 
     post {
