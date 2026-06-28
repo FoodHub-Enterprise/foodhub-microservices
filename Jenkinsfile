@@ -35,7 +35,17 @@ pipeline {
         }
 
     }
-
+  stage('Docker Build') {
+    steps {
+        dir('auth-service') {
+            sh '''
+                docker build \
+                  -t foodhub-auth-service:${BUILD_NUMBER} \
+                  .
+            '''
+        }
+    }
+}
 }
     
     }
