@@ -3,12 +3,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                echo 'Repository already checked out by Jenkins'
-            }
-        }
-
         stage('Build') {
             steps {
                 dir('auth-service') {
@@ -18,23 +12,15 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
-            steps {
-                dir('auth-service') {
-                    sh 'docker build -t foodhub/auth-service:1.0 .'
-                }
-            }
-        }
-
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully.'
+            echo 'Build Successful'
         }
 
         failure {
-            echo 'Pipeline failed.'
+            echo 'Build Failed'
         }
     }
 }
