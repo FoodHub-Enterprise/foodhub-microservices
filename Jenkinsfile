@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    environment {
+        AWS_REGION = 'ap-south-1'
+        AWS_ACCOUNT_ID = '908340074181'
+        ECR_REPOSITORY = 'foodhub-auth-service'
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+    }
+
     stages {
 
         stage('Build') {
@@ -38,22 +46,39 @@ pipeline {
                 dir('auth-service') {
                     sh '''
                     docker build \
-                      -t foodhub-auth-service:${BUILD_NUMBER} \
+                      -t ${ECR_REPOSITORY}:${IMAGE_TAG} \
                       .
                     '''
                 }
             }
         }
+
         stage('Trivy Image Scan') {
             steps {
-             sh '''
-             trivy image \
-          --severity HIGH,CRITICAL \
-          --exit-code 0 \
-          foodhub-auth-service:${BUILD_NUMBER}
-        ''' 
-    }
-}
+                sh '''
+                trivy image \
+                  --severity HIGH,CRITICAL \
+                  --exit-code 0 \
+                  ${ECR_REPOSITORY}:${IMAGE_TAG}
+                '''
+            }
+        }
+
+        stage('Verify AWS Credentials') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'aws-ecr',
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                    )
+                ]) {
+                    sh '''
+                    aws sts get-caller-identity
+                    '''
+                }
+            }
+        }
     }
 
     post {
@@ -66,5 +91,3 @@ pipeline {
         }
     }
 }
-
-
